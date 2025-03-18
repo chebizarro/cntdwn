@@ -1,7 +1,9 @@
 class Preferences {
-  List<String> get relays => [];
+  final List<String> relays;
 
-  Preferences copyWith() {
-    return Preferences();
+  Preferences({required this.relays});
+
+  Preferences copyWith({List<String>? relays}) {
+    return Preferences(relays: relays ?? this.relays);
   }
 }

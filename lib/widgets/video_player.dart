@@ -1,3 +1,5 @@
+import 'package:cntdwn/data/models/nostr_event.dart';
+import 'package:dart_nostr/nostr/model/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -23,7 +25,7 @@ class VideoData {
 /// A widget that plays a full-screen looping video with
 /// a TikTok-style overlay.
 class CntDwnVideoPlayer extends StatefulWidget {
-  final VideoData videoData;
+  final NostrEvent videoData;
 
   const CntDwnVideoPlayer({super.key, required this.videoData});
 
@@ -42,7 +44,7 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
     // You can use either network or asset sources here.
     // For network: VideoPlayerController.network(widget.videoData.videoUrl)
     // For asset:   VideoPlayerController.asset(widget.videoData.videoUrl)
-    _videoController = VideoPlayerController.asset(widget.videoData.videoUrl)
+    _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.videoData.videoUrl!))
       ..initialize().then((_) {
         // Once initialized, start playback and loop
         _videoController.setLooping(true);
@@ -114,7 +116,7 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '@${data.userName}',
+                    '@${data.pubkey}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -123,7 +125,7 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    data.caption,
+                    data.content!,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -160,17 +162,17 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
                   const SizedBox(height: 20),
                   _buildIconWithText(
                     icon: Icons.favorite,
-                    label: '${data.likes}',
+                    label: '0',
                   ),
                   const SizedBox(height: 20),
                   _buildIconWithText(
                     icon: Icons.chat_bubble,
-                    label: '${data.comments}',
+                    label: '-',
                   ),
                   const SizedBox(height: 20),
                   _buildIconWithText(
                     icon: Icons.share,
-                    label: '${data.shares}',
+                    label: '0',
                   ),
                 ],
               ),
