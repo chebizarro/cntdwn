@@ -132,7 +132,7 @@ class _VideoEditorScreenState extends ConsumerState<VideoEditorScreen> {
     final tempDir = await getTemporaryDirectory();
     final fileName = 'thumb_$timestamp.jpg';
     final thumbnailPath = path.join(tempDir.path, fileName);
-    final command = '-i $videoPath -ss 00:00:00.500 -yframes 1 $thumbnailPath';
+    final command = '-i $videoPath -ss 00:00:00.500 -vframes 1 $thumbnailPath';
     await FFmpegKit.execute(command).then((session) async {
       final returnCode = await session.getReturnCode();
       if (ReturnCode.isSuccess(returnCode)) {

@@ -15,12 +15,22 @@ dependencies:
   video_player: ^2.9.3
   image_picker: ^1.1.2
   path: ^1.9.1
+  logger: ^2.5.0
+  dart_nostr: ^9.1.0
+  crypto: ^3.0.6
+  elliptic: ^0.3.11
 
   ffmpeg_kit_flutter:
     git:
       url: https://github.com/chebizarro/ffmpeg-kit.git
       ref: main
       path: flutter/flutter
+
+  nip44:
+    git:
+      url: https://github.com/chebizarro/dart-nip44.git
+      ref: master
+  collection: ^1.19.1
 
 
 dev_dependencies:
