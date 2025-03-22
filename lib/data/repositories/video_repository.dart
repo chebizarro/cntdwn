@@ -28,7 +28,7 @@ class VideoRepository {
   void _subscribeToStreams() {
     _subscription?.cancel();
 
-    var filter = NostrFilter(kinds: const [1], limit: 100, search: '.mp4');
+    var filter = NostrFilter(kinds: const [1, 21, 22]);
 
     _subscription = _nostrService
         .subscribeToEvents(filter)

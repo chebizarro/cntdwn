@@ -4,7 +4,6 @@ class Config {
   // Configuración de Nostr
   static const List<String> nostrRelays = [
     'wss://nos.lol',
-    'wss://relay.primal.net',
     'wss://relay.nostr.band',
     'wss://nostr.mom',
   ];
