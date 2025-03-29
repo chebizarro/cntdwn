@@ -1,5 +1,5 @@
-import 'package:cntdwn/providers/nostr_cache_provider.dart';
-import 'package:cntdwn/providers/nostr_service_provider.dart';
+import 'package:vidrome/providers/nostr_cache_provider.dart';
+import 'package:vidrome/providers/nostr_service_provider.dart';
 import 'package:dart_nostr/dart_nostr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,9 +24,9 @@ final profileEventProvider = FutureProvider.family<NostrEvent?, String>((
   final client = ref.watch(nostrServiceProvider);
   final filter = NostrFilter(kinds: [0], authors: [pubkey], limit: 1);
 
-  final subscription = client.subscribeToEvents(filter);
+  final subscription = await client.subscribeToEventsAsync(filter);
 
-  await for (final event in subscription) {
+  for (final event in subscription) {
     cache.add(event);
     return event;
   }

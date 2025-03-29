@@ -1,6 +1,6 @@
-import 'package:cntdwn/core/config.dart';
-import 'package:cntdwn/data/preferences.dart';
-import 'package:cntdwn/utils/nostr_utils.dart';
+import 'package:vidrome/core/config.dart';
+import 'package:vidrome/data/preferences.dart';
+import 'package:vidrome/utils/nostr_utils.dart';
 import 'package:dart_nostr/dart_nostr.dart';
 import 'package:dart_nostr/nostr/model/relay_informations.dart';
 import 'package:logger/logger.dart';
@@ -86,6 +86,20 @@ class NostrService {
     return subscription.stream;
   }
 
+  Future<List<NostrEvent>> subscribeToEventsAsync(NostrFilter filter) async {
+    if (!_isInitialized) {
+      throw Exception('Nostr is not initialized. Call init() first.');
+    }
+
+    final request = NostrRequest(filters: [filter]);
+    final events = await _nostr.services.relays.startEventsSubscriptionAsync(
+      request: request,
+      timeout: Config.nostrConnectionTimeout,
+    );
+
+    return events;
+  }
+
   Future<void> disconnectFromRelays() async {
     if (!_isInitialized) return;
 
@@ -98,8 +112,6 @@ class NostrService {
 
   Future<NostrKeyPairs> generateKeyPair() async {
     final keyPair = NostrUtils.generateKeyPair();
-    //await AuthUtils.savePrivateKeyAndPin(
-    //    keyPair.private, ''); // Consider adding a password parameter
     return keyPair;
   }
 

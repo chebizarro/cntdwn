@@ -1,6 +1,7 @@
-import 'package:cntdwn/data/models/nostr_event.dart';
+import 'package:vidrome/data/models/nostr_event.dart';
 import 'package:dart_nostr/nostr/model/event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 /// Simple data model representing each video in the feed.
@@ -24,16 +25,16 @@ class VideoData {
 
 /// A widget that plays a full-screen looping video with
 /// a TikTok-style overlay.
-class CntDwnVideoPlayer extends StatefulWidget {
+class VidromeVideoPlayer extends ConsumerStatefulWidget {
   final NostrEvent videoData;
 
-  const CntDwnVideoPlayer({super.key, required this.videoData});
+  const VidromeVideoPlayer({super.key, required this.videoData});
 
   @override
-  State<CntDwnVideoPlayer> createState() => _CntDwnVideoPlayerState();
+  ConsumerState<VidromeVideoPlayer> createState() => _VidromeVideoPlayerState();
 }
 
-class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
+class _VidromeVideoPlayerState extends ConsumerState<VidromeVideoPlayer> {
   late VideoPlayerController _videoController;
   bool _isPlaying = true; // Track play/pause state
 
@@ -41,10 +42,16 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
   void initState() {
     super.initState();
 
-    // You can use either network or asset sources here.
-    // For network: VideoPlayerController.network(widget.videoData.videoUrl)
-    // For asset:   VideoPlayerController.asset(widget.videoData.videoUrl)
-    _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.videoData.videoUrl!))
+    final videoUrl =
+        widget.videoData.videoUrl ??
+        (widget.videoData.isNip71Video
+            ? widget.videoData.videoVariants.first.url
+            : null);
+    if (videoUrl == null) {
+      throw ArgumentError('videoUrl must not be null');
+    }
+
+    _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
       ..initialize().then((_) {
         // Once initialized, start playback and loop
         _videoController.setLooping(true);
@@ -81,19 +88,18 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
         GestureDetector(
           onTap: _onVideoTap,
           child: Center(
-            child: _videoController.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _videoController.value.aspectRatio,
-                    child: VideoPlayer(_videoController),
-                  )
-                : const CircularProgressIndicator(),
+            child:
+                _videoController.value.isInitialized
+                    ? AspectRatio(
+                      aspectRatio: _videoController.value.aspectRatio,
+                      child: VideoPlayer(_videoController),
+                    )
+                    : const CircularProgressIndicator(),
           ),
         ),
 
         // 2) Overlays (username, caption, right-side buttons)
-        Positioned.fill(
-          child: _buildVideoOverlay(),
-        ),
+        Positioned.fill(child: _buildVideoOverlay()),
       ],
     );
   }
@@ -102,83 +108,63 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
   /// action buttons (like/comment/share/profile) on the right side.
   Widget _buildVideoOverlay() {
     final data = widget.videoData;
-    return Container(
-      // A gradient overlay or slight fade can be placed here
-      child: SafeArea(
-        child: Stack(
-          children: [
-            // Bottom left: User info & caption
-            Positioned(
-              bottom: 80,
-              left: 16,
-              right: 80, // leave some space for right-side buttons
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '@${data.pubkey}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+    return SafeArea(
+      child: Stack(
+        children: [
+          // Bottom left: User info & caption
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 80, // leave some space for right-side buttons
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '@${data.pubkey}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    data.content!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: const [
-                      Icon(Icons.music_note, size: 16, color: Colors.white),
-                      SizedBox(width: 4),
-                      Text(
-                        'Original Sound - Artist Name',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  data.videoTitle?.trim() ??
+                      data.content
+                          ?.replaceAll(RegExp(r'(https?:\/\/[^\s]+\.mp4)'), '')
+                          .trim() ??
+                      '',
+                  maxLines: 5,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
+          ),
 
-            // Right side: Like/Comment/Share + Profile image
-            Positioned(
-              bottom: 100,
-              right: 16,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // Profile image (fake example)
-                  _buildIconWithText(
-                    icon: Icons.account_circle,
-                    label: '',
-                    iconSize: 60,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildIconWithText(
-                    icon: Icons.favorite,
-                    label: '0',
-                  ),
-                  const SizedBox(height: 20),
-                  _buildIconWithText(
-                    icon: Icons.chat_bubble,
-                    label: '-',
-                  ),
-                  const SizedBox(height: 20),
-                  _buildIconWithText(
-                    icon: Icons.share,
-                    label: '0',
-                  ),
-                ],
-              ),
+          // Right side: Like/Comment/Share + Profile image
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Profile image (fake example)
+                _buildIconWithText(
+                  icon: Icons.account_circle,
+                  label: '',
+                  iconSize: 60,
+                ),
+                const SizedBox(height: 20),
+                _buildIconWithText(icon: Icons.favorite, label: '0'),
+                const SizedBox(height: 20),
+                _buildIconWithText(icon: Icons.chat_bubble, label: '-'),
+                const SizedBox(height: 20),
+                _buildIconWithText(icon: Icons.share, label: '0'),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -193,12 +179,8 @@ class _CntDwnVideoPlayerState extends State<CntDwnVideoPlayer> {
       children: [
         Icon(icon, size: iconSize, color: Colors.white),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 12),
-        ),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
       ],
     );
   }
 }
-

@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:cntdwn/data/preferences.dart';
-import 'package:cntdwn/services/nostr_service.dart';
+import 'package:vidrome/data/models/nostr_event.dart';
+import 'package:vidrome/data/preferences.dart';
+import 'package:vidrome/services/nostr_service.dart';
 import 'package:dart_nostr/nostr/model/event/event.dart';
 import 'package:dart_nostr/nostr/model/request/filter.dart';
 import 'package:logger/logger.dart';
@@ -34,9 +35,11 @@ class VideoRepository {
         .subscribeToEvents(filter)
         .listen(
           (event) {
+            if (event.videoUrl != null || event.isNip71Video) {
               _events.add(event);
               _eventStreamController.add(_events);
-            _logger.i('Loaded event: $event');
+              _logger.i('Loaded event: $event');
+            }
           },
           onError: (error) {
             _logger.e('Error in order subscription: $error');

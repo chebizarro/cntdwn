@@ -1,6 +1,6 @@
-import 'package:cntdwn/data/preferences.dart';
-import 'package:cntdwn/providers/preferences_provider.dart';
-import 'package:cntdwn/services/nostr_service.dart';
+import 'package:vidrome/data/preferences.dart';
+import 'package:vidrome/providers/preferences_provider.dart';
+import 'package:vidrome/services/nostr_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final nostrServiceProvider = Provider<NostrService>((ref) {

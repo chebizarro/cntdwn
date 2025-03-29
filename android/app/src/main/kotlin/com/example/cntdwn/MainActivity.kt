@@ -1,4 +1,4 @@
-package biz.cntdwn
+package biz.vidrome
 
 import io.flutter.embedding.android.FlutterActivity
 

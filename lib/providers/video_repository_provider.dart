@@ -1,8 +1,8 @@
-import 'package:cntdwn/data/models/nostr_event.dart';
-import 'package:cntdwn/data/preferences.dart';
-import 'package:cntdwn/data/repositories/video_repository.dart';
-import 'package:cntdwn/providers/nostr_service_provider.dart';
-import 'package:cntdwn/providers/preferences_provider.dart';
+import 'package:vidrome/data/models/nostr_event.dart';
+import 'package:vidrome/data/preferences.dart';
+import 'package:vidrome/data/repositories/video_repository.dart';
+import 'package:vidrome/providers/nostr_service_provider.dart';
+import 'package:vidrome/providers/preferences_provider.dart';
 import 'package:dart_nostr/dart_nostr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,8 +30,7 @@ final filteredVideoStreamProvider = Provider<List<NostrEvent>>((ref) {
     data: (allOrders) {
       allOrders.sort((o1, o2) => o1.createdAt!.compareTo(o2.createdAt!));
 
-      final filtered =
-          allOrders.reversed.where((e) => e.videoUrl != null).toList();
+      final filtered = allOrders.reversed.toList();
       return filtered;
     },
     orElse: () => [],

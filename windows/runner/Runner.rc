@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "biz" "\0"
-            VALUE "FileDescription", "cntdwn" "\0"
+            VALUE "FileDescription", "vidrome" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "cntdwn" "\0"
+            VALUE "InternalName", "vidrome" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 Biz All rights reserved." "\0"
-            VALUE "OriginalFilename", "cntdwn.exe" "\0"
-            VALUE "ProductName", "cntdwn" "\0"
+            VALUE "OriginalFilename", "vidrome.exe" "\0"
+            VALUE "ProductName", "vidrome" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,4 +1,4 @@
-import 'package:cntdwn/data/models/video_variants.dart';
+import 'package:vidrome/data/models/video_variants.dart';
 import 'package:dart_nostr/dart_nostr.dart';
 
 extension NostrEventExtensions on NostrEvent {
@@ -14,7 +14,10 @@ extension NostrEventExtensions on NostrEvent {
   String? get videoUrl {
     final rTagUrl = tags
         ?.firstWhere(
-          (tag) => tag.firstOrNull == 'r' && tag.length > 1,
+          (tag) =>
+              tag.firstOrNull == 'r' &&
+              tag.length > 1 &&
+              tag[1].endsWith('.mp4'),
           orElse: () => [],
         )
         .elementAtOrNull(1);
