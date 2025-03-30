@@ -66,7 +66,7 @@ class HomeFeedScreen extends ConsumerWidget {
                 icon: const Icon(Icons.person_outline),
                 color: Colors.white,
                 onPressed: () {
-                  // TODO: handle Profile action
+                  context.push('/user_profile');
                 },
               ),
             ],

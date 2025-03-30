@@ -22,6 +22,8 @@ dependencies:
   dart_nostr: ^9.1.0
   crypto: ^3.0.6
   elliptic: ^0.3.11
+  blurhash: ^1.2.0
+  camera: ^0.11.1
 
   ffmpeg_kit_flutter:
     git:
@@ -38,8 +40,6 @@ dependencies:
     git:
       url: https://github.com/chebizarro/flutter-signer-plugin.git
       ref: v0.0.2
-  blurhash: ^1.2.0
-  camera: ^0.11.1
 
 dev_dependencies:
   flutter_test:
