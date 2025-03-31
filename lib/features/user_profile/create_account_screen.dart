@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vidrome/data/models/profile_metadata.dart';
+import 'package:vidrome/data/models/user_profile.dart';
 import 'dart:math';
 
 import 'package:vidrome/providers/user_profile_provider.dart';
@@ -30,25 +32,26 @@ class CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Create Account"),
-      ),
+      appBar: AppBar(title: const Text("Create Account")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              Text("Your new private key (keep safe):",
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                "Your new private key (keep safe):",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               SelectableText(newPrivKeyHex),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _displayNameCtrl,
                 decoration: const InputDecoration(labelText: "Display Name"),
-                validator: (val) =>
-                    val == null || val.isEmpty ? "Required field" : null,
+                validator:
+                    (val) =>
+                        val == null || val.isEmpty ? "Required field" : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -74,16 +77,18 @@ class CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
 
   void _onCreateAccount() {
     if (_formKey.currentState?.validate() ?? false) {
-
       final userPubkey = "pubkey_of_${newPrivKeyHex.substring(0, 12)}";
 
       final user = UserProfile(
         pubkey: userPubkey,
-        displayName: _displayNameCtrl.text,
-        about: _aboutCtrl.text,
-        pictureUrl: _pictureCtrl.text.isNotEmpty
-            ? _pictureCtrl.text
-            : "https://placekitten.com/210/210",
+        metadata: ProfileMetadata(
+          displayName: _displayNameCtrl.text,
+          about: _aboutCtrl.text,
+          picture:
+              _pictureCtrl.text.isNotEmpty
+                  ? _pictureCtrl.text
+                  : "https://placekitten.com/210/210",
+        ),
       );
       ref.read(userProfileProvider.notifier).login(user);
       context.pop();
