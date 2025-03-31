@@ -1,17 +1,17 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dart_nostr/dart_nostr.dart';
 import 'package:vidrome/data/models/user_profile.dart';
-
+import 'package:vidrome/features/signer/nip55_signer.dart';
 
 class AuthService {
+  static final nip55 = Nip55Signer();
+
   static const _privateKeyStorageKey = 'user_private_key';
   static const _storage = FlutterSecureStorage();
   final Nostr _nostr = Nostr.instance;
 
   /// Login using NIP-55: generates or retrieves a locally stored private key.
-  Future<UserProfile> loginWithNip55({
-    String? existingPrivateKey,
-  }) async {
+  Future<UserProfile> loginWithNip55({String? existingPrivateKey}) async {
     String privateKey;
 
     if (existingPrivateKey != null) {
@@ -20,14 +20,16 @@ class AuthService {
     } else {
       // Check if key is already stored
       privateKey =
-          await _storage.read(key: _privateKeyStorageKey) ?? _generateNewPrivateKey();
+          await _storage.read(key: _privateKeyStorageKey) ??
+          _generateNewPrivateKey();
 
       // Store securely
       await _storage.write(key: _privateKeyStorageKey, value: privateKey);
     }
 
-    final keyPair =
-        _nostr.keysService.generateKeyPairFromExistingPrivateKey(privateKey);
+    final keyPair = _nostr.keysService.generateKeyPairFromExistingPrivateKey(
+      privateKey,
+    );
 
     // Fetch user's metadata (kind 0)
     final profile = await _fetchNip01ProfileMetadata(keyPair.public);
@@ -90,10 +92,7 @@ class AuthService {
     final events = await _nostr.relaysService.startEventsSubscriptionAsync(
       request: NostrRequest(
         filters: [
-          NostrFilter(
-            kinds: [0],
-            authors: [pubkey],
-          ),
+          NostrFilter(kinds: [0], authors: [pubkey]),
         ],
       ),
     );
@@ -111,7 +110,8 @@ class AuthService {
     final data = metadata.content;
 
     // Assuming metadata content is JSON
-    final Map<String, dynamic> metaJson = Nostr.instance.utilsService.decodeJson(data);
+    final Map<String, dynamic> metaJson = Nostr.instance.utilsService
+        .decodeJson(data);
 
     return UserProfile(
       pubkey: pubkey,
@@ -131,8 +131,9 @@ class AuthService {
     final privateKey = await _storage.read(key: _privateKeyStorageKey);
     if (privateKey == null) return null;
 
-    final keyPair =
-        _nostr.keysService.generateKeyPairFromExistingPrivateKey(privateKey);
+    final keyPair = _nostr.keysService.generateKeyPairFromExistingPrivateKey(
+      privateKey,
+    );
     return keyPair.public;
   }
 }
